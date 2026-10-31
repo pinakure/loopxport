@@ -36,8 +36,8 @@ def main(archivo_entrada, intervalo=None, offset=0.0):
 
     stream = audio.inicializar_motor(audio_rep, fps, canales)
 
-    fuente          = pygame.font.Font("ocr.ttf", 16)
-    fuente_lcd      = pygame.font.Font("lcd.ttf", 24)
+    fuente          = pygame.font.Font(filesys.path("ocr.ttf"), 16)
+    fuente_lcd      = pygame.font.Font(filesys.path("lcd.ttf"), 24)
     reloj           = pygame.time.Clock()
 
     bpm_actual      = 128.0

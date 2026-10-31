@@ -1,5 +1,6 @@
 import pygame
 import os
+import filesys
 
 backdrop = None
 knob     = None 
@@ -90,8 +91,8 @@ def mostrar_splash(pantalla, ancho, alto):
     fuente_splash = pygame.font.SysFont("Consolas", 28, bold=True)
     fuente_sub = pygame.font.SysFont("Consolas", 16)
     
-    backdrop = carga_imagen('deck.png')
-    knob     = carga_imagen('knob.png')
+    backdrop = carga_imagen(filesys.path('deck.png'))
+    knob     = carga_imagen(filesys.path('knob.png'))
     pantalla.blit(backdrop, (0, 0))
         
     txt_titulo = fuente_splash.render("LOOPXPORT PRO", True, (130, 250, 50))

@@ -1,6 +1,13 @@
 import os
+import sys
 import tkinter as tk
 from tkinter import filedialog
+
+def path(ruta_relativa):
+    """ Obtiene la ruta absoluta de los recursos, compatible con PyInstaller """
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, ruta_relativa, ruta_relativa)
+    return os.path.join(os.path.abspath("."), ruta_relativa)
 
 def obtener_nombre_fichero(titulo="Seleccionar archivo", tipos_archivo=None):
     """
