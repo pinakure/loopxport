@@ -17,6 +17,7 @@ import ui
 import filesys
 import audio 
 import os
+from pygame._sdl2 import Window
 
 def main(archivo_entrada, intervalo=None, offset=0.0):
     pygame.init()
@@ -25,7 +26,7 @@ def main(archivo_entrada, intervalo=None, offset=0.0):
     ANCHO, ALTO = 1650, 928 
     pantalla = pygame.display.set_mode((ANCHO, ALTO), pygame.NOFRAME)
     pygame.display.set_caption(f"LoopXPort Pro - { archivo_entrada.split(os.path.sep)[-1] }")
-    
+    ventana = Window.from_display_module()
     ui.mostrar_splash(pantalla, ANCHO, ALTO)
     
     audio_g, audio_rep, fps, canales, audio_seg = audio.cargar_audio(archivo_entrada)
@@ -55,9 +56,9 @@ def main(archivo_entrada, intervalo=None, offset=0.0):
     slider_general  = ui.SliderRaton(192, 624, 1000, int(total_muestras // 2), muestras_actuales, "Interval")
     slider_fino     = ui.SliderRaton(192, 676, muestras_actuales - 500, muestras_actuales + 500, muestras_actuales, "Fine Adjust")
     slider_bloque   = ui.SliderRaton(192, 727, 1, 2, 1, "Block")
-
-    ejecutando = True
-    while ejecutando:
+    drag            = False
+    run             = True
+    while run:
         reloj.tick(60)
         ancho_w, alto_w = pantalla.get_size()
         
@@ -79,7 +80,7 @@ def main(archivo_entrada, intervalo=None, offset=0.0):
         # --- EVENTOS ---
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
-                ejecutando = False
+                run = False
             
             elif evento.type == pygame.VIDEORESIZE:
                 ancho_w, alto_w = evento.size
@@ -89,12 +90,12 @@ def main(archivo_entrada, intervalo=None, offset=0.0):
                 slider_fino.recalcular_dimensiones(ancho_w, alto_w)
                 slider_bloque.recalcular_dimensiones(ancho_w, alto_w)
 
-            if slider_offset.manejar_evento(evento):
+            elif slider_offset.manejar_evento(evento):
                 offset_actual = int(slider_offset.val)
                 inicio_bloque_muestras = offset_actual + (bloque_seleccionado - 1) * int(muestras_actuales)
                 audio.actualizar_parametros_dinamicos(inicio_bloque_muestras, muestras_actuales)
 
-            if slider_general.manejar_evento(evento):
+            elif slider_general.manejar_evento(evento):
                 muestras_actuales = slider_general.val
                 slider_fino.val_min = muestras_actuales - 500
                 slider_fino.val_max = muestras_actuales + 500
@@ -102,16 +103,50 @@ def main(archivo_entrada, intervalo=None, offset=0.0):
                 slider_fino.actualizar_tirador_desde_val()
                 audio.actualizar_parametros_dinamicos(inicio_bloque_muestras, muestras_actuales)
                 
-            if slider_fino.manejar_evento(evento):
+            elif slider_fino.manejar_evento(evento):
                 muestras_actuales = slider_fino.val
                 slider_general.val = muestras_actuales
                 slider_general.actualizar_tirador_desde_val()
                 audio.actualizar_parametros_dinamicos(inicio_bloque_muestras, muestras_actuales)
 
-            if slider_bloque.manejar_evento(evento):
+            elif slider_bloque.manejar_evento(evento):
                 bloque_seleccionado = int(slider_bloque.val)
                 inicio_bloque_muestras = offset_actual + (bloque_seleccionado - 1) * int(muestras_actuales)
                 audio.actualizar_parametros_dinamicos(inicio_bloque_muestras, muestras_actuales)
+
+            elif evento.type == pygame.MOUSEBUTTONDOWN:
+                if evento.button == 1:  # Botón izquierdo
+                    if evento.pos[1] <= 32:  # Solo en los primeros 32px
+                        drag = True
+                        
+                        # CLAVE PARA EVITAR SALTOS: Guardamos la posición actual de la ventana
+                        pos_actual_x, pos_actual_y = ventana.position
+                        
+                        # Guardamos la distancia exacta entre el ratón y la esquina superior izquierda de la ventana
+                        offset_x = evento.pos[0]
+                        offset_y = evento.pos[1]
+                    else:
+                        print(f"Clic normal del juego en: {evento.pos}")
+                
+            elif evento.type == pygame.MOUSEBUTTONUP:
+                if evento.button == 1:
+                    drag = False
+                    
+            elif evento.type == pygame.MOUSEMOTION:
+                if drag:
+                    # 1. Obtenemos dónde está la ventana actualmente en la pantalla del PC
+                    pos_actual_x, pos_actual_y = ventana.position
+                    
+                    # 2. El evento.pos dentro de MOUSEMOTION nos da la posición actual del ratón.
+                    # Calculamos cuánto se ha desplazado respecto al punto de agarre inicial (offset)
+                    nueva_x = pos_actual_x + (evento.pos[0] - offset_x)
+                    nueva_y = pos_actual_y + (evento.pos[1] - offset_y)
+                    
+                    # 3. Movemos la ventana a la posición calculada de forma inmediata
+                    ventana.position = (nueva_x, nueva_y)
+                else:
+                    # Tus otros eventos de movimiento aquí
+                    pass            
 
             elif evento.type == pygame.KEYDOWN:
                 paso_base = 0.1 if (pygame.key.get_mods() & pygame.KMOD_SHIFT) else 1.0
