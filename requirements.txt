@@ -1,0 +1,7 @@
+numpy
+matplotlib
+pydub
+audioop-lts
+sounddevice
+audiofile
+pygame
