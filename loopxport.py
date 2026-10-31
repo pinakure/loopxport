@@ -14,6 +14,7 @@ import pygame
 import time
 
 import ui
+import filesys
 import audio 
 import os
 
@@ -165,7 +166,11 @@ def main(archivo_entrada, intervalo=None, offset=0.0):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Se necesita un parámetro: < ARCHIVO-AUDIO (wav o mp3) > [ intervalo ] [ offset ]")
+        ruta, fichero = filesys.obtener_nombre_fichero(tipos_archivo=[("WAVE", "*.wav"),("MP3", "*.mp3")])
+        if ruta is None or fichero is None:
+            print("Se necesita un parámetro: < ARCHIVO-AUDIO (wav o mp3) > [ intervalo ] [ offset ]")
+            exit(1)
+        main(fichero)
     else:        
         if len(sys.argv) < 3:
             main(sys.argv[1])
