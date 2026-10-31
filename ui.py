@@ -94,10 +94,10 @@ def mostrar_splash(pantalla, ancho, alto):
     knob     = carga_imagen('knob.png')
     pantalla.blit(backdrop, (0, 0))
         
-    txt_titulo = fuente_splash.render("Smiker Loop Exporter Pro", True, (50, 120, 240))
-    txt_carga = fuente_sub.render("Decodificando audio y fijando geometría sólida estable... Espere.", True, (200, 200, 200))
-    pantalla.blit(txt_titulo, (ancho // 2 - txt_titulo.get_width() // 2, alto // 2 - 40))
-    pantalla.blit(txt_carga, (ancho // 2 - txt_carga.get_width() // 2, alto // 2 + 10))
+    txt_titulo = fuente_splash.render("LOOPXPORT PRO", True, (130, 250, 50))
+    txt_carga = fuente_sub.render("Decodificando audio y fijando geometría sólida estable... Espere.", True, (130, 250, 50))
+    pantalla.blit(txt_titulo, (ancho // 2 - txt_titulo.get_width() // 2, alto // 3 - 40))
+    pantalla.blit(txt_carga, (ancho // 2 - txt_carga.get_width() // 2, alto // 3 + 10))
     pygame.display.flip()
 
 

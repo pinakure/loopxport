@@ -24,7 +24,7 @@ def main(archivo_entrada, intervalo=None, offset=0.0):
     
     ANCHO, ALTO = 1650, 928 
     pantalla = pygame.display.set_mode((ANCHO, ALTO), pygame.NOFRAME)
-    pygame.display.set_caption(f"Loop Exporter Pro - { archivo_entrada.split(os.path.sep)[-1] }")
+    pygame.display.set_caption(f"LoopXPort Pro - { archivo_entrada.split(os.path.sep)[-1] }")
     
     ui.mostrar_splash(pantalla, ANCHO, ALTO)
     
@@ -38,7 +38,6 @@ def main(archivo_entrada, intervalo=None, offset=0.0):
 
     fuente          = pygame.font.Font("ocr.ttf", 16)
     fuente_lcd      = pygame.font.Font("lcd.ttf", 24)
-    fuente_negrita  = pygame.font.SysFont("Consolas", 18, bold=True)
     reloj           = pygame.time.Clock()
 
     bpm_actual      = 128.0
